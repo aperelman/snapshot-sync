@@ -385,3 +385,8 @@ app.get('/api/snapshots/:config/:id/browse', (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+/**
+ * GET /api/snapshots/:config/:id/browse
+ * Browse files inside a snapshot
+ */
