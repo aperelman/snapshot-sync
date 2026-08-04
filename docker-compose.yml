@@ -6,11 +6,11 @@ services:
     ports:
       - "3001:3001"
     environment:
-      - BACKUP_DISK=/mnt/backup
+      - BACKUP_DISK=/backup
       - SCRIPTS_DIR=/scripts
       - PORT=3001
     volumes:
-      - /run/media/amitp/Backup:/mnt/backup:ro
+      - /run/media/amitp/Backup:/backup:ro
       - ./scripts:/scripts:ro
     restart: unless-stopped
     networks:
@@ -21,7 +21,7 @@ services:
   web:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     environment:

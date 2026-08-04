@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -6,11 +6,26 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Install TypeScript globally for build
+RUN npm install -g typescript
+
 # Copy source
 COPY . .
 
-# Expose Vite dev server port
+# Build TypeScript
+RUN npm run build
+
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install serve
+RUN npm install -g serve
+
+# Copy built files
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 
-# Start Vite dev server with host option
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--port", "3000"]
+CMD ["serve", "-s", "dist", "-l", "3000"]
