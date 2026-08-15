@@ -36,3 +36,4 @@ Thumbs.db
 *.size_disabled
 *.with_info
 .aider*
+*.backup
