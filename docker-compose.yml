@@ -26,7 +26,6 @@ services:
       - "3000:3000"
     environment:
       - DOCKER=true
-      - VITE_API_URL=http://api:3001
     depends_on:
       - api
     restart: unless-stopped
