@@ -61,7 +61,7 @@ app.get('/api/snapshots', (req: Request, res: Response) => {
 // Get snapshot details
 app.get('/api/snapshots/:config/:id', (req: Request, res: Response) => {
   try {
-    const { config, id } = req.params;
+    const { config, id } = req.params as { config: string; id: string };
     const snapPath = path.join(BACKUP_DISK, config, id);
     const infoXmlPath = path.join(BACKUP_DISK, config, `${id}.info.xml`);
     
@@ -94,7 +94,7 @@ app.get('/api/snapshots/:config/:id', (req: Request, res: Response) => {
 // Browse snapshot filesystem
 app.get('/api/snapshots/:config/:id/browse', (req: Request, res: Response) => {
   try {
-    const { config, id } = req.params;
+    const { config, id } = req.params as { config: string; id: string };
     const subPath = req.query.path as string || '';
     const basePath = path.join(BACKUP_DISK, config, id);
     const targetPath = subPath ? path.join(basePath, subPath) : basePath;
