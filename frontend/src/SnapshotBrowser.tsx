@@ -1,16 +1,31 @@
-const API_BASE_URL = "http://localhost:3001";
 import React, { useState, useEffect, useCallback } from 'react';
-import './SnapshotBrowser.css';
+import styles from './SnapshotBrowser.module.css';
 
-function SnapshotBrowser({ config, snapshotId }) {
-  const [items, setItems] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [path, setPath] = useState('');
-  const [error, setError] = useState(null);
-  const [selectedItem, setSelectedItem] = useState(null);
+// Types
+interface FileItem {
+  name: string;
+  type: 'file' | 'directory';
+  size?: number;
+  modified?: string;
+  permissions?: string;
+}
+
+interface SnapshotBrowserProps {
+  config: string;
+  snapshotId: string;
+}
+
+// const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
+const SnapshotBrowser: React.FC<SnapshotBrowserProps> = ({ config, snapshotId }) => {
+  const [items, setItems] = useState<FileItem[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [path, setPath] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [selectedItem, setSelectedItem] = useState<FileItem | null>(null);
 
   // Load directory contents
-  const loadDirectory = useCallback(async (dirPath = '') => {
+  const loadDirectory = useCallback(async (dirPath: string = '') => {
     if (!config || !snapshotId) return;
     
     setLoading(true);
@@ -28,7 +43,7 @@ function SnapshotBrowser({ config, snapshotId }) {
       setItems(data.items || []);
       setPath(data.currentPath || '');
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error loading directory:', err);
     } finally {
       setLoading(false);
@@ -43,7 +58,7 @@ function SnapshotBrowser({ config, snapshotId }) {
   }, [config, snapshotId, loadDirectory]);
 
   // Handle item click (navigate into directories)
-  const handleItemClick = (item) => {
+  const handleItemClick = (item: FileItem) => {
     if (item.type === 'directory') {
       const newPath = path ? `${path}/${item.name}` : item.name;
       loadDirectory(newPath);
@@ -63,7 +78,7 @@ function SnapshotBrowser({ config, snapshotId }) {
   };
 
   // Format file size
-  const formatSize = (bytes) => {
+  const formatSize = (bytes?: number): string => {
     if (!bytes) return '0 B';
     const units = ['B', 'KB', 'MB', 'GB', 'TB'];
     const i = Math.floor(Math.log(bytes) / Math.log(1024));
@@ -71,15 +86,15 @@ function SnapshotBrowser({ config, snapshotId }) {
   };
 
   // Format date
-  const formatDate = (date) => {
+  const formatDate = (date?: string): string => {
     if (!date) return 'N/A';
     return new Date(date).toLocaleString();
   };
 
   if (loading) {
     return (
-      <div className="snapshot-browser-loading">
-        <div className="spinner"></div>
+      <div className={styles['snapshot-browser-loading']}>
+        <div className={styles.spinner}></div>
         <p>Loading directory contents...</p>
       </div>
     );
@@ -87,7 +102,7 @@ function SnapshotBrowser({ config, snapshotId }) {
 
   if (error) {
     return (
-      <div className="snapshot-browser-error">
+      <div className={styles['snapshot-browser-error']}>
         <p>Error: {error}</p>
         <button onClick={() => loadDirectory('')}>Retry</button>
       </div>
@@ -95,26 +110,26 @@ function SnapshotBrowser({ config, snapshotId }) {
   }
 
   return (
-    <div className="snapshot-browser">
-      <div className="browser-header">
+    <div className={styles['snapshot-browser']}>
+      <div className={styles['browser-header']}>
         <h3>Snapshot: {snapshotId}</h3>
-        <div className="breadcrumb">
-          <button onClick={handleBack} disabled={!path} className="back-button">
+        <div className={styles.breadcrumb}>
+          <button onClick={handleBack} disabled={!path} className={styles['back-button']}>
             ← Back
           </button>
-          <span className="path-display">/ {path || 'root'}</span>
+          <span className={styles['path-display']}>/ {path || 'root'}</span>
         </div>
       </div>
 
-      <div className="browser-content">
+      <div className={styles['browser-content']}>
         {items.length === 0 ? (
-          <p className="empty-message">This directory is empty</p>
+          <p className={styles['empty-message']}>This directory is empty</p>
         ) : (
-          <ul className="file-list">
+          <ul className={styles['file-list']}>
             {items.map((item, index) => (
               <li 
                 key={index} 
-                className={`file-item ${item.type}`}
+                className={`${styles['file-item']} ${styles[item.type]}`}
                 onClick={() => handleItemClick(item)}
                 onDoubleClick={() => {
                   if (item.type === 'directory') {
@@ -123,12 +138,12 @@ function SnapshotBrowser({ config, snapshotId }) {
                   }
                 }}
               >
-                <span className="file-icon">
+                <span className={styles['file-icon']}>
                   {item.type === 'directory' ? '📁' : '📄'}
                 </span>
-                <span className="file-name">{item.name}</span>
-                <span className="file-size">{formatSize(item.size)}</span>
-                <span className="file-date">{formatDate(item.modified)}</span>
+                <span className={styles['file-name']}>{item.name}</span>
+                <span className={styles['file-size']}>{formatSize(item.size)}</span>
+                <span className={styles['file-date']}>{formatDate(item.modified)}</span>
               </li>
             ))}
           </ul>
@@ -136,8 +151,8 @@ function SnapshotBrowser({ config, snapshotId }) {
       </div>
 
       {selectedItem && (
-        <div className="file-details-modal">
-          <div className="modal-content">
+        <div className={styles['file-details-modal']}>
+          <div className={styles['modal-content']}>
             <h3>File Details</h3>
             <p><strong>Name:</strong> {selectedItem.name}</p>
             <p><strong>Type:</strong> {selectedItem.type}</p>
@@ -152,6 +167,6 @@ function SnapshotBrowser({ config, snapshotId }) {
       )}
     </div>
   );
-}
+};
 
 export default SnapshotBrowser;

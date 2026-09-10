@@ -1,0 +1,21 @@
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install TypeScript globally (optional)
+RUN npm install -g typescript
+
+# Copy package files first for better caching
+COPY package*.json ./
+
+# Install all dependencies including TypeScript
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# For Vite + TypeScript development
+EXPOSE 3000
+
+# Start with Vite dev server (with TypeScript support)
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

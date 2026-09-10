@@ -2,7 +2,7 @@ import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 
 export default defineConfig(({ mode }) => {
-  // In Docker, we should use the service name 'api'
+  // In Docker, use the service name 'api'
   // In local dev, use localhost
   const isDocker = mode === 'docker' || process.env.DOCKER === 'true'
   const apiTarget = isDocker ? 'http://api:3001' : 'http://localhost:3001'
@@ -13,7 +13,6 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       port: 3000,
-      host: true,
       proxy: {
         '/api': {
           target: apiTarget,

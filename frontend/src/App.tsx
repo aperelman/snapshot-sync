@@ -1,16 +1,30 @@
-const API_BASE_URL = "http://localhost:3001";
 import React, { useState, useEffect, useCallback } from 'react';
 import SnapshotBrowser from './SnapshotBrowser';
-import './App.css';
+import styles from './App.module.css';
 
-function App() {
-  const [configs, setConfigs] = useState({});
-  const [selectedConfig, setSelectedConfig] = useState('');
-  const [snapshots, setSnapshots] = useState([]);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [selectedSnapshot, setSelectedSnapshot] = useState(null); // For browsing
-  const [showBrowser, setShowBrowser] = useState(false);
+// Types
+interface Snapshot {
+  id: string;
+  date: string;
+  description?: string;
+  sizeBytes?: number;
+  fileCount?: number;
+}
+
+interface Configs {
+  [key: string]: Snapshot[];
+}
+
+const API_BASE_URL = import.meta.env.VITE_API_URL || "";
+
+const App: React.FC = () => {
+  const [configs, setConfigs] = useState<Configs>({});
+  const [selectedConfig, setSelectedConfig] = useState<string>('');
+  const [snapshots, setSnapshots] = useState<Snapshot[]>([]);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string | null>(null);
+  const [selectedSnapshot, setSelectedSnapshot] = useState<Snapshot | null>(null);
+  const [showBrowser, setShowBrowser] = useState<boolean>(false);
 
   // Load snapshots
   const loadSnapshots = useCallback(async () => {
@@ -28,7 +42,7 @@ function App() {
         setSelectedConfig(configKeys[0]);
       }
     } catch (err) {
-      setError(err.message);
+      setError(err instanceof Error ? err.message : 'Unknown error');
       console.error('Error loading snapshots:', err);
     } finally {
       setLoading(false);
@@ -50,14 +64,14 @@ function App() {
   }, [loadSnapshots]);
 
   // Handle config change
-  const handleConfigChange = (e) => {
+  const handleConfigChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setSelectedConfig(e.target.value);
     setSelectedSnapshot(null);
     setShowBrowser(false);
   };
 
   // Handle snapshot double-click
-  const handleSnapshotDoubleClick = (snapshot) => {
+  const handleSnapshotDoubleClick = (snapshot: Snapshot) => {
     setSelectedSnapshot(snapshot);
     setShowBrowser(true);
   };
@@ -69,7 +83,7 @@ function App() {
   };
 
   // Format date for display
-  const formatDate = (dateString) => {
+  const formatDate = (dateString?: string): string => {
     if (!dateString) return 'N/A';
     try {
       const date = new Date(dateString);
@@ -81,8 +95,8 @@ function App() {
 
   if (loading) {
     return (
-      <div className="app-loading">
-        <div className="spinner"></div>
+      <div className={styles['app-loading']}>
+        <div className={styles.spinner}></div>
         <p>Loading snapshots...</p>
       </div>
     );
@@ -90,7 +104,7 @@ function App() {
 
   if (error) {
     return (
-      <div className="app-error">
+      <div className={styles['app-error']}>
         <p>Error: {error}</p>
         <button onClick={loadSnapshots}>Retry</button>
       </div>
@@ -100,14 +114,14 @@ function App() {
   const configKeys = Object.keys(configs);
 
   return (
-    <div className="app">
-      <header className="app-header">
+    <div className={styles.app}>
+      <header className={styles['app-header']}>
         <h1>📸 Snapshot Sync UI</h1>
         <p>Browse and manage your snapshots</p>
       </header>
 
-      <main className="app-main">
-        <div className="controls">
+      <main className={styles['app-main']}>
+        <div className={styles.controls}>
           <label htmlFor="config-select">Select Config:</label>
           <select 
             id="config-select"
@@ -123,15 +137,15 @@ function App() {
               ))
             )}
           </select>
-          <span className="snapshot-count">
+          <span className={styles['snapshot-count']}>
             {snapshots.length} snapshots
           </span>
         </div>
 
         {showBrowser && selectedSnapshot ? (
-          <div className="browser-container">
-            <div className="browser-header">
-              <button onClick={handleBrowserClose} className="close-browser">
+          <div className={styles['browser-container']}>
+            <div className={styles['browser-header']}>
+              <button onClick={handleBrowserClose} className={styles['close-browser']}>
                 ← Back to snapshots
               </button>
               <h2>
@@ -144,11 +158,11 @@ function App() {
             />
           </div>
         ) : (
-          <div className="snapshots-list">
+          <div className={styles['snapshots-list']}>
             {snapshots.length === 0 ? (
-              <p className="empty-message">No snapshots found for this config</p>
+              <p className={styles['empty-message']}>No snapshots found for this config</p>
             ) : (
-              <table className="snapshots-table">
+              <table className={styles['snapshots-table']}>
                 <thead>
                   <tr>
                     <th>ID</th>
@@ -164,9 +178,9 @@ function App() {
                     <tr 
                       key={snapshot.id}
                       onDoubleClick={() => handleSnapshotDoubleClick(snapshot)}
-                      className="snapshot-row"
+                      className={styles['snapshot-row']}
                     >
-                      <td className="snapshot-id">{snapshot.id}</td>
+                      <td className={styles['snapshot-id']}>{snapshot.id}</td>
                       <td>{formatDate(snapshot.date)}</td>
                       <td>{snapshot.description || 'N/A'}</td>
                       <td>
@@ -179,7 +193,7 @@ function App() {
                       <td>
                         <button 
                           onClick={() => handleSnapshotDoubleClick(snapshot)}
-                          className="browse-button"
+                          className={styles['browse-button']}
                         >
                           Browse 📂
                         </button>
@@ -189,7 +203,7 @@ function App() {
                 </tbody>
               </table>
             )}
-            <div className="hint">
+            <div className={styles.hint}>
               💡 Double-click on a snapshot or click "Browse" to explore its contents
             </div>
           </div>
@@ -197,6 +211,6 @@ function App() {
       </main>
     </div>
   );
-}
+};
 
 export default App;

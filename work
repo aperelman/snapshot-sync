@@ -1,0 +1,24 @@
+I'm continuing work on the Btrfs Snapshot Sync project.
+
+Yesterday we:
+1. Consolidated repos into /home/amitp/src/snapshot-sync/
+2. Fixed API on port 3002
+3. Started TypeScript migration
+4. Created RESUME_GUIDE.md and start-dev.sh
+
+Current state:
+- Git initialized with first commit
+- API works on port 3002
+- Vite dev server works on port 3000
+
+I need to:
+- Push to GitHub/GitLab
+- Complete TypeScript migration
+- Add proper types
+- Test snapshot browsing
+- Fix remaining UI issues
+
+Project is at: /home/amitp/src/snapshot-sync/
+Start with: ./start-dev.sh
+
+Let's continue where we left off.

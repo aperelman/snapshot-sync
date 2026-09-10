@@ -15,21 +15,24 @@ services:
     restart: unless-stopped
     networks:
       - snapshot-net
+    security_opt:
+      - label=disable
 
   web:
     build:
       context: ./frontend
-      dockerfile: Dockerfile
+      dockerfile: Dockerfile.dev
     ports:
       - "3000:3000"
     environment:
       - DOCKER=true
-      - VITE_API_URL=http://api:3001
     depends_on:
       - api
     restart: unless-stopped
     networks:
       - snapshot-net
+    security_opt:
+      - label=disable
 
 networks:
   snapshot-net:

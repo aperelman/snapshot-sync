@@ -1,0 +1,22 @@
+Project: Btrfs Snapshot Sync
+Path: /home/amitp/src/snapshot-sync/
+
+Current State:
+- API on port 3002
+- Frontend on port 3000
+- TypeScript migration started
+- Need to push to GitHub
+
+TODO:
+- Push to GitHub/GitLab
+- Complete TypeScript migration
+- Add proper types
+- Test snapshot browsing
+- Fix remaining UI issues
+
+How to start:
+./start-dev.sh
+
+How to resume conversation:
+Paste this to ChatGPT:
+"Continuing Btrfs Snapshot Sync project. Yesterday we consolidated repos, fixed API on port 3002, started TS migration. Need to push to GitHub and complete TS migration."

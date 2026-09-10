@@ -1,4 +1,4 @@
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
 WORKDIR /app
 
@@ -6,14 +6,26 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 
+# Install TypeScript globally for build
+RUN npm install -g typescript
+
 # Copy source
 COPY . .
 
-# Set Docker environment variable
-ENV DOCKER=true
+# Build TypeScript
+RUN npm run build
 
-# Expose Vite dev server port
+# Production stage
+FROM node:18-alpine
+
+WORKDIR /app
+
+# Install serve
+RUN npm install -g serve
+
+# Copy built files
+COPY --from=builder /app/dist ./dist
+
 EXPOSE 3000
 
-# Start Vite dev server with Docker mode
-CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0", "--mode", "docker"]
+CMD ["serve", "-s", "dist", "-l", "3000"]

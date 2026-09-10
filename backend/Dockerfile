@@ -1,3 +1,23 @@
+# Build stage
+FROM node:18-alpine AS builder
+
+WORKDIR /app
+
+# Install btrfs-progs for the sync scripts
+RUN apk add --no-cache btrfs-progs sudo
+
+# Install dependencies
+COPY package*.json ./
+RUN npm install
+
+# Copy TypeScript config and source
+COPY tsconfig.json ./
+COPY src ./src
+
+# Build TypeScript
+RUN npm run build
+
+# Production stage
 FROM node:18-alpine
 
 WORKDIR /app
@@ -5,11 +25,11 @@ WORKDIR /app
 # Install btrfs-progs for the sync scripts
 RUN apk add --no-cache btrfs-progs sudo
 
+# Copy built files
+COPY --from=builder /app/dist ./dist
+COPY --from=builder /app/node_modules ./node_modules
 COPY package*.json ./
-RUN npm ci --only=production
-
-COPY server.js .
 
 EXPOSE 3001
 
-CMD ["node", "server.js"]
+CMD ["node", "dist/server.js"]
