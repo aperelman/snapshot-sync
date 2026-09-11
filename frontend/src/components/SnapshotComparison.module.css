@@ -1,0 +1,224 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background-color: #f5f5f5;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+.header {
+  background-color: #2c3e50;
+  color: white;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.header h1 {
+  margin: 0;
+  font-size: 1.8rem;
+}
+
+.headerControls {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.swapBtn,
+.settingsBtn {
+  background-color: #3498db;
+  color: white;
+  border: none;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.swapBtn:hover,
+.settingsBtn:hover {
+  background-color: #2980b9;
+}
+
+.settingsPanel {
+  background-color: white;
+  padding: 1.5rem;
+  border-bottom: 1px solid #ddd;
+}
+
+.settingsForm {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+}
+
+.settingField {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.settingField label {
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+
+.settingField input {
+  padding: 0.5rem;
+  border: 1px solid #bbb;
+  border-radius: 4px;
+}
+
+.settingsActions {
+  display: flex;
+  gap: 0.75rem;
+  grid-column: 1 / -1;
+}
+
+.saveBtn,
+.cancelBtn {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.saveBtn {
+  background-color: #27ae60;
+  color: white;
+}
+
+.cancelBtn {
+  background-color: #95a5a6;
+  color: white;
+}
+
+.error {
+  background-color: #e74c3c;
+  color: white;
+  padding: 1rem;
+}
+
+.splitView {
+  display: flex;
+  flex: 1;
+  overflow: hidden;
+}
+
+.panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: white;
+  border-right: 1px solid #ddd;
+}
+
+.panel:last-child {
+  border-right: none;
+}
+
+.panel h2 {
+  margin: 0;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border-bottom: 1px solid #eee;
+}
+
+.diskPath {
+  padding: 0.5rem 1rem;
+  font-size: 0.85rem;
+  color: #666;
+  background-color: #f5f5f5;
+  border-bottom: 1px solid #eee;
+  font-family: monospace;
+}
+
+.configList {
+  flex: 1;
+  overflow-y: auto;
+}
+
+.configItem {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1rem;
+  border-bottom: 1px solid #f0f0f0;
+  cursor: pointer;
+}
+
+.configItem:hover {
+  background-color: #f9f9f9;
+}
+
+.configItem input[type="checkbox"] {
+  cursor: pointer;
+}
+
+.configInfo {
+  flex: 1;
+}
+
+.configName {
+  font-weight: 500;
+  font-size: 0.95rem;
+}
+
+.configMeta {
+  font-size: 0.8rem;
+  color: #999;
+  margin-top: 0.25rem;
+}
+
+.empty {
+  padding: 2rem 1rem;
+  text-align: center;
+  color: #999;
+}
+
+.center {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background-color: #ecf0f1;
+  border-right: 1px solid #ddd;
+  border-left: 1px solid #ddd;
+}
+
+.syncRightBtn,
+.syncLeftBtn {
+  width: 50px;
+  height: 50px;
+  border: none;
+  border-radius: 50%;
+  background-color: #3498db;
+  color: white;
+  font-size: 1.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.syncRightBtn:hover:not(:disabled),
+.syncLeftBtn:hover:not(:disabled) {
+  background-color: #2980b9;
+}
+
+.syncRightBtn:disabled,
+.syncLeftBtn:disabled {
+  background-color: #bdc3c7;
+  cursor: not-allowed;
+}
+
+.status {
+  background-color: #ecf0f1;
+  padding: 0.75rem 1rem;
+  border-top: 1px solid #ddd;
+  font-size: 0.9rem;
+}
