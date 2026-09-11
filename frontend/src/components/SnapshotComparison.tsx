@@ -29,18 +29,18 @@ interface AppSettings {
   externalPath: string;
 }
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || '';
-const SETTINGS_KEY = 'snapshot-comparison-settings';
+const apiBaseUrl = import.meta.env.VITE_API_URL || '';
+const settingsKey = 'snapshot-comparison-settings';
 
-const DEFAULT_SETTINGS: AppSettings = {
+const defaultSettings: AppSettings = {
   localPath: '/',
   externalPath: '/run/media/amitp/Backup',
 };
 
 export const SnapshotComparison: React.FC = () => {
   const [settings, setSettings] = useState<AppSettings>(() => {
-    const saved = localStorage.getItem(SETTINGS_KEY);
-    return saved ? JSON.parse(saved) : DEFAULT_SETTINGS;
+    const saved = localStorage.getItem(settingsKey);
+    return saved ? JSON.parse(saved) : defaultSettings;
   });
 
   const [left, setLeft] = useState<DiskSide>({
@@ -64,13 +64,13 @@ export const SnapshotComparison: React.FC = () => {
 
   const saveSettings = (newSettings: AppSettings) => {
     setSettings(newSettings);
-    localStorage.setItem(SETTINGS_KEY, JSON.stringify(newSettings));
+    localStorage.setItem(settingsKey, JSON.stringify(newSettings));
   };
 
   const loadConfigs = async (path: string): Promise<SnapperConfig[]> => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/configs?path=${encodeURIComponent(path)}`
+        `${apiBaseUrl}/api/configs?path=${encodeURIComponent(path)}`
       );
       if (!response.ok) {
         throw new Error('Failed to load configs');
@@ -138,7 +138,7 @@ export const SnapshotComparison: React.FC = () => {
       const [source, target] =
         direction === 'leftToRight' ? [left, right] : [right, left];
 
-      const response = await fetch(`${API_BASE_URL}/api/sync`, {
+      const response = await fetch(`${apiBaseUrl}/api/sync`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
