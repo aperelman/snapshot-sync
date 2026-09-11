@@ -1,3 +1,12 @@
+/**
+ * SnapshotComparison Component
+ * 
+ * Split-screen UI for comparing snapshots between local disk and backup.
+ * Left panel: Local Root filesystem
+ * Right panel: External Backup disk
+ * Center: Bidirectional sync buttons
+ */
+
 import React, { useState, useEffect } from 'react';
 import styles from './SnapshotComparison.module.css';
 
