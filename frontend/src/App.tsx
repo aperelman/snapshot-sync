@@ -1,4 +1,4 @@
-import React from 'react';
+
 import SnapshotComparison from './components/SnapshotComparison';
 import './App.module.css';
 

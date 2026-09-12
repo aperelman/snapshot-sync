@@ -8,6 +8,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { loadConfigs, syncSnapshots } from '../utils/snapshotApi';
 import styles from './SnapshotComparison.module.css';
 
 interface SnapperConfig {
@@ -28,8 +29,6 @@ interface AppSettings {
   localPath: string;
   externalPath: string;
 }
-
-const apiBaseUrl = import.meta.env.VITE_API_URL || '';
 const settingsKey = 'snapshot-comparison-settings';
 
 const defaultSettings: AppSettings = {
@@ -65,23 +64,6 @@ export const SnapshotComparison: React.FC = () => {
   const saveSettings = (newSettings: AppSettings) => {
     setSettings(newSettings);
     localStorage.setItem(settingsKey, JSON.stringify(newSettings));
-  };
-
-  const loadConfigs = async (path: string): Promise<SnapperConfig[]> => {
-    try {
-      const response = await fetch(
-        `${apiBaseUrl}/api/configs?path=${encodeURIComponent(path)}`
-      );
-      if (!response.ok) {
-        throw new Error('Failed to load configs');
-      }
-      const data = await response.json();
-      return data.configs || [];
-    } catch (err) {
-      const msg = err instanceof Error ? err.message : 'Unknown error';
-      setError(msg);
-      return [];
-    }
   };
 
   const refreshConfigs = async () => {
@@ -131,25 +113,21 @@ export const SnapshotComparison: React.FC = () => {
 
   const handleSync = async (direction: 'leftToRight' | 'rightToLeft') => {
     if (selectedConfigs.size === 0) {
+      setError('No configs selected');
       return;
     }
+
     setLoading(true);
+    setError(null);
     try {
       const [source, target] =
         direction === 'leftToRight' ? [left, right] : [right, left];
 
-      const response = await fetch(`${apiBaseUrl}/api/sync`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          sourcePath: source.path,
-          targetPath: target.path,
-          configs: Array.from(selectedConfigs),
-        }),
-      });
-      if (!response.ok) {
-        throw new Error('Sync failed');
-      }
+      await syncSnapshots(
+        source.path,
+        target.path,
+        Array.from(selectedConfigs)
+      );
 
       await refreshConfigs();
       setSelectedConfigs(new Set());
@@ -160,6 +138,7 @@ export const SnapshotComparison: React.FC = () => {
       setLoading(false);
     }
   };
+
 
   return (
     <div className={styles.container}>
@@ -197,9 +176,6 @@ export const SnapshotComparison: React.FC = () => {
           disk={left}
           selectedConfigs={selectedConfigs}
           onToggleConfig={toggleConfig}
-          onSync={() => handleSync('leftToRight')}
-          loading={loading}
-          position="left"
         />
 
         <div className={styles.center}>
@@ -225,9 +201,6 @@ export const SnapshotComparison: React.FC = () => {
           disk={right}
           selectedConfigs={selectedConfigs}
           onToggleConfig={toggleConfig}
-          onSync={() => handleSync('rightToLeft')}
-          loading={loading}
-          position="right"
         />
       </div>
 
@@ -242,17 +215,12 @@ interface DiskPanelProps {
   disk: DiskSide;
   selectedConfigs: Set<string>;
   onToggleConfig: (name: string) => void;
-  onSync: () => void;
-  loading: boolean;
-  position: 'left' | 'right';
 }
 
 const DiskPanel: React.FC<DiskPanelProps> = ({
   disk,
   selectedConfigs,
   onToggleConfig,
-  loading,
-  position,
 }) => {
   const icon = disk.type === 'local' ? '💾' : '💿';
 
