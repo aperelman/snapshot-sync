@@ -1,11 +1,11 @@
 import express, { Request, Response } from 'express';
-import fs from 'fs';
-import path from 'path';
+import fs, { existsSync, readdirSync } from 'fs';
+import path, { join } from 'path';
 import cors from 'cors';
 
 const app = express();
 const PORT = process.env.PORT || 3001;
-const BACKUP_DISK = process.env.BACKUP_DISK || '/backup';
+const BACKUP_DISK = process.env.BACKUP_DISK || '/run/media/amitp/Backup';
 
 app.use(cors());
 app.use(express.json());
@@ -135,6 +135,45 @@ app.get('/api/snapshots/:config/:id/browse', (req: Request, res: Response) => {
     const err = error as Error;
     console.error('Browse error:', err);
     res.status(500).json({ error: err.message });
+  }
+});
+
+
+
+
+
+// List available configs
+app.get('/api/configs', (req: Request, res: Response) => {
+  try {
+    const queryPath = req.query.path as string || '/';
+    const configs: any[] = [];
+    
+    if (queryPath === '/' || queryPath === '') {
+      // Local filesystem - list snapper config subdirs
+      const localConfigsPath = '/run/media/amitp/Backup';
+      const validConfigs = ['root', 'home'];
+      for (const config of validConfigs) {
+        const configPath = join(localConfigsPath, config);
+        if (existsSync(configPath)) {
+          const snapshots = readdirSync(configPath).filter((f: string) => !f.endsWith('.info.xml'));
+          configs.push({ name: config, path: config, snapshotCount: snapshots.length });
+        }
+      }
+    } else {
+      // Backup disk - list actual snapshots
+      const backupPath = queryPath;
+      if (existsSync(backupPath)) {
+        const items = readdirSync(backupPath);
+        items.forEach((item: string) => {
+          if (!item.endsWith('.info.xml')) {
+            configs.push({ name: item, path: item, snapshotCount: 1 });
+          }
+        });
+      }
+    }
+    res.json({ configs });
+  } catch (err) {
+    res.status(500).json({ error: 'Failed to list configs' });
   }
 });
 

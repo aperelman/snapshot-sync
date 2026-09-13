@@ -1,17 +1,34 @@
 #!/bin/bash
-echo "🚀 Resuming Btrfs Snapshot Sync development..."
+set -e
 
-cd /home/amitp/src/snapshot-sync/ui
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+cd "$SCRIPT_DIR"
 
-# Start API
-echo "📦 Starting API on port 3002..."
-docker-compose up -d api
+echo "🧹 Cleaning up..."
+pkill -f "vite\|ts-node\|nodemon" || true
+docker-compose down -v 2>/dev/null || true
+sleep 2
 
-# Wait for API
+echo "🧹 Clearing ports..."
+sudo fuser -k 3000/tcp 3001/tcp 3002/tcp 2>/dev/null || true
+sleep 1
+
+echo "✅ Starting backend..."
+cd backend
+npm run dev &
+BACKEND_PID=$!
+
 sleep 3
-echo "✅ API ready: http://localhost:3002/api/health"
 
-# Start frontend
-cd frontend
-echo "🎨 Starting frontend on port 3000..."
-npm run dev
+echo "✅ Starting frontend..."
+cd ../frontend
+npm run dev &
+FRONTEND_PID=$!
+
+echo ""
+echo "🎉 Services ready:"
+echo "   Frontend: http://localhost:3000"
+echo "   Backend:  http://localhost:3001"
+echo ""
+
+wait
